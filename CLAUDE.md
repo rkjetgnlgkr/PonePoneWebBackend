@@ -122,6 +122,23 @@ routes/
 | `DB_PASSWORD` | `qwerty789` | |
 | `CACHE_DRIVER` | `file` | rate limit 快取存於 `storage/framework/cache/data/` |
 
+## Docker
+
+`Dockerfile`（PHP 8.1 + Apache）與 `.dockerignore` 已就位，可直接容器化部署：
+
+```bash
+docker build -t ponepone-backend .
+docker run -p 8000:80 \
+  -e DB_HOST=host.docker.internal \
+  -e DB_PASSWORD=qwerty789 \
+  ponepone-backend
+```
+
+- Base image：`php:8.1-apache`
+- Composer install 於 build 時執行（`--no-dev --optimize-autoloader`）
+- Apache DocumentRoot 指向 `/public`，`mod_rewrite` 已啟用
+- `.env` 不打包進 image，敏感值透過環境變數注入
+
 ## Known Gotchas
 
 - **Rate Limit 429**：開發測試容易超過 throttle。清除方式：`rm -rf storage/framework/cache/data/*`（比 `artisan cache:clear` 更可靠）
